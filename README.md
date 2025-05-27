@@ -115,4 +115,5 @@ Distribuído sob a licença MIT. Veja o arquivo LICENSE para detalhes.
 
 ## Contato
 Luis Enrique Krulikowski
+
 LinkedIn: linkedin.com/in/luis-krulikowski
