@@ -64,8 +64,8 @@ Para rodar a aplicação localmente:
 1. Clone o repositório
 
 ```
-git clone https://github.com/seu-usuario/eu-logistic-performance-index.git
-cd eu-logistic-performance-index
+git clone https://github.com/seu-usuario/eu-lpi-analysis.git
+cd eu-lpi-analysis
 ```
 
 2. Crie e ative um ambiente virtual
