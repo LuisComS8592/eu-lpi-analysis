@@ -8,7 +8,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def bodw_model(data: pd.DataFrame, alpha: float = 0.015, beta: float = 0.97, linprog_method: str = "highs") -> pd.Series:
+def bodw_model(data: pd.DataFrame, alpha: float = 0.015, beta: float = 1.000, linprog_method: str = "highs") -> pd.Series:
     """
     Calcula a eficiência dos DMUs pelo modelo DEA BoDw (Benefit of the Doubt) com restrições nos pesos.
 
