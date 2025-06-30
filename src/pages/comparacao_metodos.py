@@ -41,7 +41,7 @@ def render():
 
     # DEA
     inputs = df_ano[subindicadores]
-    dea_result = dea.bodw_model(inputs)
+    dea_result = dea.bod_model(inputs)
     dea_ranking = pd.DataFrame({
         "Country": df_ano["Country"].values,
         "Efficiency Score": dea_result.values
