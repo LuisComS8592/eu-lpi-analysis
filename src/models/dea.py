@@ -26,7 +26,7 @@ def bod_model(data: pd.DataFrame, alpha: float = 0.0, beta: float = 1.0, linprog
     Retorna:
     --------
     pd.Series
-        Eficiência BoDw de cada DMU, indexada pelos nomes dos países.
+        Eficiência BoD de cada DMU, indexada pelos nomes dos países.
     """
     if data.isnull().values.any():
         raise ValueError("O DataFrame contém valores ausentes.")
