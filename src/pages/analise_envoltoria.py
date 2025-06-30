@@ -56,11 +56,11 @@ def render():
         dados.index = df_ano["Country"]
 
         # Aplicar o modelo BoD
-        scores = dea.bodw_model(dados)
+        scores = dea.bod_model(dados)
 
         results_df = pd.DataFrame({
             "Country": scores.index,
-            "BoDw Score": scores.values,
+            "BoD Score": scores.values,
             "Year": ano_selecionado
         })
 
