@@ -8,7 +8,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def bod_model(data: pd.DataFrame, alpha: float = 0.015, beta: float = 1.000, linprog_method: str = "highs") -> pd.Series:
+def bod_model(data: pd.DataFrame, alpha: float = 0.015, beta: float = 1.0, linprog_method: str = "highs") -> pd.Series:
     """
     Calcula a eficiência dos DMUs pelo modelo DEA BoD (Benefit of the Doubt) com restrições nos pesos.
 
@@ -19,7 +19,7 @@ def bod_model(data: pd.DataFrame, alpha: float = 0.015, beta: float = 1.000, lin
     alpha : float, opcional
         Limite inferior para os pesos dos critérios (default=0.015).
     beta : float, opcional
-        Limite superior para os pesos dos critérios (default=0.97).
+        Limite superior para os pesos dos critérios (default=1.0).
     linprog_method : str, opcional
         Método usado pelo scipy.optimize.linprog (default='highs').
 
