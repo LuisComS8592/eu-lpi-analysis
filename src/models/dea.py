@@ -8,7 +8,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def bod_model(data: pd.DataFrame, alpha: float = 0.015, beta: float = 1.0, linprog_method: str = "highs") -> pd.Series:
+def bod_model(data: pd.DataFrame, alpha: float = 0.0, beta: float = 1.0, linprog_method: str = "highs") -> pd.Series:
     """
     Calcula a eficiência dos DMUs pelo modelo DEA BoD (Benefit of the Doubt) com restrições nos pesos.
 
