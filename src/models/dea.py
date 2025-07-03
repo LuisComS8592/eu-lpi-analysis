@@ -17,7 +17,7 @@ def bod_model(data: pd.DataFrame, alpha: float = 0.0, beta: float = 1.0, linprog
     data : pd.DataFrame
         DataFrame contendo os outputs (subindicadores) de cada DMU (país). Índice deve ser os nomes dos países.
     alpha : float, opcional
-        Limite inferior para os pesos dos critérios (default=0.015).
+        Limite inferior para os pesos dos critérios (default=0.0).
     beta : float, opcional
         Limite superior para os pesos dos critérios (default=1.0).
     linprog_method : str, opcional
