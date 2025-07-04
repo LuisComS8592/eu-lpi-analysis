@@ -45,7 +45,7 @@ def render():
         x="Country",
         y="TOPSIS Score",
         color="TOPSIS Score",
-        color_continuous_scale="Blues",
+        color_continuous_scale="RdYlGn",
         title=f"Ranking dos Países (TOPSIS) - {ano}"
     )
     fig.update_layout(xaxis_tickangle=-45)
