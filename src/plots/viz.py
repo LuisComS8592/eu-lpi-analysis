@@ -272,10 +272,10 @@ def plot_dea_efficiency(results_df: pd.DataFrame) -> go.Figure:
         results_df.sort_values("DEA Efficiency", ascending=False),
         x='Country',
         y='DEA Efficiency',
-        color='Country',
+        color='DEA Efficiency',
         color_continuous_scale="RdYlGn",
         facet_col='Year',
-        #facet_col_wrap=2,
+        facet_col_wrap=2,
         title='Eficiência DEA por País e Ano',
         labels={'DEA Efficiency': 'Eficiência DEA'}
     )
