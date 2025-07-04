@@ -269,10 +269,11 @@ def plot_dea_efficiency(results_df: pd.DataFrame) -> go.Figure:
         plotly.graph_objects.Figure: Gráfico interativo da eficiência DEA.
     """
     fig = px.bar(
-        results_df,
+        results_df.sort_values("DEA Efficiency", ascending=False),
         x='Country',
         y='DEA Efficiency',
         color='Country',
+        color_continuous_scale="RdYlGn",
         facet_col='Year',
         facet_col_wrap=2,
         title='Eficiência DEA por País e Ano',
