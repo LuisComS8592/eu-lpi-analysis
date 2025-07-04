@@ -299,7 +299,7 @@ def plot_topsis_ranking(df: pd.DataFrame, ano: int) -> go.Figure:
         df_sorted,
         x='Country',
         y='TOPSIS Score',
-        color='RdYlGn',
+        color='TOPSIS Score',
         title=f'Ranking TOPSIS - {ano}',
         labels={'TOPSIS Score': 'Score TOPSIS'},
         color_continuous_scale='RdYlGn'
