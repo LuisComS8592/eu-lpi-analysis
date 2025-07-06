@@ -85,13 +85,15 @@ def render():
     fig = viz.plot_scatter_ranking(comparativo_clean, "Ranking WB", "Ranking TOPSIS", "Ranking World Bank", "Ranking TOPSIS")
     st.plotly_chart(fig, use_container_width=True)
 
+    fig = viz.plot_scatter_ranking(comparativo_clean, "Ranking DEA", "Ranking TOPSIS", "Ranking DEA", "Ranking TOPSIS")
+    st.plotly_chart(fig, use_container_width=True)
+
     # Destaques de convergências/divergências
     st.subheader("Destaques - Convergências e Divergências")
     threshold = 3
 
     comparativo["DEA vs WB"] = (comparativo["Ranking DEA"] - comparativo["Ranking WB"]).abs()
     comparativo["TOPSIS vs WB"] = (comparativo["Ranking TOPSIS"] - comparativo["Ranking WB"]).abs()
-    comparativo["DEA vs TOPSIS"] = (comparativo["Ranking DEA"] - comparativo["Ranking TOPSIS"]).abs()
 
     convergentes = comparativo[
         (comparativo["DEA vs WB"] <= threshold) & 
