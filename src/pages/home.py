@@ -69,7 +69,7 @@ def render():
     num_paises = df['Country'].nunique()
 
     col1, col2, col3 = st.columns([1.8, 1.2, 1])
-    col1.markdown(f'<div class="kpi">📅 <b>Ano mais recente:</b> {ultimo_ano}</div>', unsafe_allow_html=True)
+    col1.markdown(f'<div class="kpi">📅 <b>Ano do Relatório:</b> {ultimo_ano}</div>', unsafe_allow_html=True)
     col2.metric(label="Média LPI Agregado (UE)", value=f"{media_lpi:.2f}")
     col3.metric(label="Países da UE", value=num_paises)
 
