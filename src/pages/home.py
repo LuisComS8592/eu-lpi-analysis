@@ -86,7 +86,7 @@ def render():
     ax.grid(True, linestyle='--', alpha=0.5)
     plt.xticks(rotation=40)
 
-    st.pyplot(fig)
+    # st.pyplot(fig)
     st.plotly_chart(px.line(media_ano, x='Year', y='LPI Aggregate'))  # alternativa interativa opcional
 
     st.markdown("---")
