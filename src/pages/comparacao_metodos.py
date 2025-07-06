@@ -91,6 +91,7 @@ def render():
 
     comparativo["DEA vs WB"] = (comparativo["Ranking DEA"] - comparativo["Ranking WB"]).abs()
     comparativo["TOPSIS vs WB"] = (comparativo["Ranking TOPSIS"] - comparativo["Ranking WB"]).abs()
+    comparativo["DEA vs TOPSIS"] = (comparativo["Ranking DEA"] - comparativo["Ranking TOPSIS"]).abs()
 
     convergentes = comparativo[
         (comparativo["DEA vs WB"] <= threshold) & 
