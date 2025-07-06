@@ -4,6 +4,7 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import plotly.express as px
 from src.data import world_bank
 
 # Página inicial da aplicação com visão geral do LPI na UE
