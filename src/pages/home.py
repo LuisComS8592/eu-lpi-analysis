@@ -60,7 +60,7 @@ def render():
     )
 
     # Carrega dados
-    df = world_bank.load_lpi_data()
+    df = world_bank.load_lpi_data(source='remote')
     df['Year'] = pd.to_numeric(df['Year'], errors='coerce')
 
     # KPIs principais
