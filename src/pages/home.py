@@ -87,7 +87,7 @@ def render():
     plt.xticks(rotation=40)
 
     st.pyplot(fig)
-    # st.plotly_chart(px.line(media_ano, x='Year', y='LPI Aggregate'))  # alternativa interativa opcional
+    st.plotly_chart(px.line(media_ano, x='Year', y='LPI Aggregate'))  # alternativa interativa opcional
 
     st.markdown("---")
 
