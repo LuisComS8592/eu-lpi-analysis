@@ -3,7 +3,7 @@
 import pandas as pd
 import os
 
-def load_lpi_data(source: str = "local") -> pd.DataFrame:
+def load_lpi_data(source: str = "remote") -> pd.DataFrame:
     """
     Carrega os dados do LPI a partir de um arquivo local ou de uma fonte remota.
 
