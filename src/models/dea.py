@@ -67,8 +67,6 @@ def bod_model(data: pd.DataFrame, alpha: float = 0.0, beta: float = 1.0, linprog
             c=c,
             A_ub=A_ub,
             b_ub=b_ub,
-            A_eq=a_eq,
-            b_eq=b_eq,
             bounds=bounds,
             method=linprog_method,
         )
@@ -76,7 +74,7 @@ def bod_model(data: pd.DataFrame, alpha: float = 0.0, beta: float = 1.0, linprog
         if res.success:
             score = -res.fun
             # Forçar score entre 1e-6 e 1 - 1e-6 para evitar extremos
-            score = min(max(score, 1e-6), 1 - 1e-6)
+            # score = min(max(score, 1e-6), 1 - 1e-6)
         else:
             logger.warning(f"Otimização falhou para {data.index[j]}: {res.message}")
             logger.debug(f"País: {data.index[j]}")
