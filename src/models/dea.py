@@ -5,82 +5,109 @@ import pandas as pd
 from scipy.optimize import linprog
 from sklearn.preprocessing import MinMaxScaler
 import logging
+from typing import Union
 
 logger = logging.getLogger(__name__)
 
-def bod_model(data: pd.DataFrame, alpha: float = 0.0, beta: float = 1.0, linprog_method: str = "highs") -> pd.Series:
+def bod_model(
+    data: pd.DataFrame, 
+    normalize_data: bool = False,
+    normalize_weights: bool = False,
+    alpha: float = 0.0, 
+    beta: float = None,
+    return_weights: bool = False,
+    linprog_method: str = "highs"
+) -> Union[pd.Series, tuple[pd.Series, pd.DataFrame]]:
     """
-    Calcula a eficiência dos DMUs pelo modelo DEA BoD (Benefit of the Doubt) com restrições nos pesos.
+    Calcula a eficiência dos DMUs pelo modelo DEA BoD (Benefit of the Doubt).
 
     Parâmetros:
     -----------
     data : pd.DataFrame
-        DataFrame contendo os outputs (subindicadores) de cada DMU (país). Índice deve ser os nomes dos países.
+        DataFrame com os outputs (subindicadores) de cada DMU (país).
+    normalize_data : bool, opcional
+        Se True, aplica a normalização MinMaxScaler aos dados (default=False).
+    normalize_weights : bool, opcional
+        Se True, força a soma dos pesos a ser igual a 1 (default=False).
     alpha : float, opcional
-        Limite inferior para os pesos dos critérios (default=0.0).
+        Limite inferior para os pesos (default=0.0).
     beta : float, opcional
-        Limite superior para os pesos dos critérios (default=1.0).
+        Limite superior para os pesos (default=None).
+    return_weights : bool, opcional
+        Se True, retorna uma tupla (scores, weights). 
+        Se False, retorna apenas a série de scores para manter a compatibilidade (default=False).
     linprog_method : str, opcional
-        Método usado pelo scipy.optimize.linprog (default='highs').
+        Método para o scipy.optimize.linprog (default='highs').
 
     Retorna:
     --------
-    pd.Series
-        Eficiência BoD de cada DMU, indexada pelos nomes dos países.
+    Union[pd.Series, tuple[pd.Series, pd.DataFrame]]
+        - Se `return_weights=False`: pd.Series com os scores de eficiência.
+        - Se `return_weights=True`: Tupla (pd.Series com scores, pd.DataFrame com pesos).
     """
+    # --- Validação de Entradas ---
     if data.isnull().values.any():
         raise ValueError("O DataFrame contém valores ausentes.")
     if not np.issubdtype(data.values.dtype, np.number):
-        raise TypeError("Todos os valores devem ser numéricos.")
-
-    if alpha < 0 or beta > 1 or alpha >= beta:
-        raise ValueError("Parâmetros alpha e beta devem satisfazer 0 <= alpha < beta <= 1.")
-
-    # Verifica se o índice é adequado (ex: strings)
+        raise TypeError("Todos os valores no DataFrame devem ser numéricos.")
     if not all(isinstance(x, str) for x in data.index):
-        logger.warning("Índice do DataFrame não parece conter nomes dos países como strings.")
+        logger.warning("O índice do DataFrame não parece conter nomes de países como strings.")
 
-    scaler = MinMaxScaler()
-    # Verifica se colunas têm variação para evitar erro MinMaxScaler
-    if np.any(data.nunique() <= 1):
-        logger.warning("Uma ou mais colunas possuem valores constantes; normalização pode ser afetada.")
+    # --- Pré-processamento dos Dados (Condicional) ---
+    if normalize_data:
+        if np.any(data.nunique() <= 1):
+            logger.warning("Uma ou mais colunas possuem valores constantes; a normalização pode ser afetada.")
+        scaler = MinMaxScaler()
+        outputs = scaler.fit_transform(data)
+    else:
+        outputs = data.values
 
-    outputs = scaler.fit_transform(data.values)
     n, m = outputs.shape
     scores = []
+    all_weights = []
+    
+    # --- Validação dos Pesos ---
+    if normalize_weights:
+        if beta is None or beta > 1.0:
+            beta = 1.0
+        if alpha < 0 or alpha >= beta:
+            raise ValueError("Com normalize_weights=True, os parâmetros devem satisfazer 0 <= alpha < beta <= 1.")
+        if m * alpha > 1:
+            raise ValueError(f"Conflito de restrições: a soma mínima dos pesos ({m*alpha}) é > 1.")
+        if m * beta < 1:
+            raise ValueError(f"Conflito de restrições: a soma máxima dos pesos ({m*beta}) é < 1.")
+    else:
+        if beta is not None and alpha >= beta:
+            raise ValueError("O limite inferior (alpha) deve ser menor que o superior (beta).")
 
-    # Restrição soma dos pesos = 1 (pesos somam 1, pesos entre alpha e beta)
-    a_eq = np.ones((1, m))
-    b_eq = np.array([1])
-
-    # Limites dos pesos
+    # --- Definição das Restrições da Programação Linear ---
     bounds = [(alpha, beta) for _ in range(m)]
-
-    # Pré-cálculo das restrições A_ub, b_ub - mesma para todas as DMUs
     A_ub = outputs
     b_ub = np.ones(n)
+    A_eq, b_eq = (np.ones((1, m)), np.array([1])) if normalize_weights else (None, None)
 
+    # --- Otimização para cada DMU ---
     for j in range(n):
-        c = -outputs[j]  # Maximizar outputs[j] · weights -> minimizar -outputs[j] · weights
+        c = -outputs[j]
 
-        res = linprog(
-            c=c,
-            A_ub=A_ub,
-            b_ub=b_ub,
-            bounds=bounds,
-            method=linprog_method,
-        )
+        res = linprog(c=c, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method=linprog_method)
 
         if res.success:
             score = -res.fun
-            # Forçar score entre 1e-6 e 1 - 1e-6 para evitar extremos
-            # score = min(max(score, 1e-6), 1 - 1e-6)
+            weights = res.x
         else:
-            logger.warning(f"Otimização falhou para {data.index[j]}: {res.message}")
-            logger.debug(f"País: {data.index[j]}")
-            logger.debug(f"Outputs normalizados: {outputs[j]}")
+            logger.warning(f"A otimização falhou para {data.index[j]}: {res.message}")
             score = np.nan
+            weights = np.full(m, np.nan)
 
         scores.append(score)
+        all_weights.append(weights)
+    
+    # --- Formatação do Resultado Final ---
+    final_scores = pd.Series(scores, index=data.index, name="BoD_Score")
+    final_weights = pd.DataFrame(all_weights, index=data.index, columns=data.columns)
 
-    return pd.Series(scores, index=data.index, name="BoD Score")
+    if return_weights:
+        return final_scores, final_weights
+    else:
+        return final_scores
