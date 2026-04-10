@@ -112,5 +112,4 @@ eu-lpi-analysis/
 Distributed under the MIT License. See the `LICENSE` file for details.
 
 ## Contact
-Luis Enrique Krulikowski
-[LinkedIn](linkedin.com/in/luis-krulikowski)
+Luis Enrique Krulikowski | [LinkedIn](linkedin.com/in/luis-krulikowski)
