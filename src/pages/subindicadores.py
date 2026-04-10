@@ -5,30 +5,30 @@ from src.data import world_bank
 from src.plots import viz
 
 def render():
-    st.title("📊 Pontos Fortes e Fracos por Subindicadores")
+    st.title("📊 Strengths and Weaknesses by Sub-indicators")
 
-    # Carregar dados
+    # Load data
     df = world_bank.load_lpi_data()
 
-    # Filtros laterais
-    st.sidebar.header("🎛️ Filtros")
-    selected_country = st.sidebar.selectbox("Selecione um país", sorted(df["Country"].unique()))
+    # Sidebar filters
+    st.sidebar.header("🎛️ Filters")
+    selected_country = st.sidebar.selectbox("Select a country", sorted(df["Country"].unique()))
 
     all_years = sorted(df["Year"].unique(), reverse=True)
     selected_years = st.sidebar.multiselect(
-        "Selecione um ou mais anos",
+        "Select one or more years",
         all_years,
         default=[all_years[0]]
     )
 
-    # Verificações básicas
+    # Basic validations
     if not selected_years:
-        st.warning("🔔 Selecione ao menos um ano para visualizar os subindicadores.")
+        st.warning("🔔 Please select at least one year to view the sub-indicators.")
         return
 
-    st.markdown(f"### 📌 Desempenho do país **{selected_country}** por Subindicadores")
+    st.markdown(f"### 📌 Performance of **{selected_country}** by Sub-indicators")
 
-    # Subindicadores a analisar
+    # Sub-indicators to analyze
     subindicators = [
         "Customs",
         "Infrastructure",
@@ -38,12 +38,14 @@ def render():
         "Timeliness"
     ]
 
-    # Radar e tabela
+    # Radar chart and table
     try:
-        fig, tabela = viz.plot_radar_subindicators(df, selected_country, selected_years, subindicators)
+        # Assuming viz.plot_radar_subindicators handles title/labels via its logic
+        # If not, ensure the internal labels in viz.py are also in English.
+        fig, table = viz.plot_radar_subindicators(df, selected_country, selected_years, subindicators)
         st.plotly_chart(fig, use_container_width=True)
 
-        st.markdown("### 📄 Tabela de Valores dos Subindicadores")
-        st.dataframe(tabela, use_container_width=True)
+        st.markdown("### 📄 Table of Sub-indicator Values")
+        st.dataframe(table, use_container_width=True)
     except ValueError as e:
-        st.error(f"❌ Erro ao gerar visualização: {e}")
+        st.error(f"❌ Error generating visualization: {e}")
