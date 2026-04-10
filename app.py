@@ -7,38 +7,41 @@ from src.pages import (
     analises_estatisticas, mapa_interativo, home
 )
 
-# Este script principal carrega a aplicação Streamlit.
-# Cada página da aplicação está modularizada no diretório src/pages
-# e deve conter uma função 'render()' responsável pela interface de cada aba.
+# This main script loads the Streamlit application.
+# Each page of the application is modularized in the src/pages directory
+# and must contain a 'render()' function responsible for the interface of each tab.
 
 def main():
-    # Configuração da página Streamlit
+    # Streamlit page configuration
     st.set_page_config(
-        page_title="Avaliação do Desempenho Logístico na União Europeia",
+        page_title="Logistics Performance Assessment in the European Union",
         page_icon="🚚",
         layout="wide",
         initial_sidebar_state="expanded"
     )
 
-    st.sidebar.title("🚦 Navegação")
+    st.sidebar.title("🚦 Navigation")
 
+    # Map page names to their respective render functions
     pages = {
-        "Página Inicial": home.render,
-        "Análises Estatísticas": analises_estatisticas.render,
-        "Subindicadores por País": subindicadores.render,
-        "Análise dos Países": analise_paises.render,
-        "Mapa Interativo": mapa_interativo.render,
-        "Análise Envoltória de Dados (DEA)": analise_envoltoria.render,
+        "Home Page": home.render,
+        "Statistical Analysis": analises_estatisticas.render,
+        "Sub-indicators by Country": subindicadores.render,
+        "Country Analysis": analise_paises.render,
+        "Interactive Map": mapa_interativo.render,
+        "Data Envelopment Analysis (DEA)": analise_envoltoria.render,
         "TOPSIS": avaliacao_topsis.render,
-        "Comparação de Métodos": comparacao_metodos.render
+        "Methods Comparison": comparacao_metodos.render
     }
 
-    page = st.sidebar.radio("Ir para", list(pages.keys()))
+    # Navigation menu
+    page = st.sidebar.radio("Go to", list(pages.keys()))
 
     try:
+        # Render the selected page
         pages[page]()
     except Exception as e:
-        st.error(f"Ocorreu um erro ao carregar a página '{page}'.")
+        st.error(f"An error occurred while loading the page '{page}'.")
         st.exception(e)
 
 if __name__ == "__main__":
