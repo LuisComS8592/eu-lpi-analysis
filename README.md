@@ -3,6 +3,7 @@
 [🚀 Access the web application](https://eu-lpi-analysis.streamlit.app)
 
 Detailed analysis of the logistics performance of European Union countries based on the Logistics Performance Index (LPI). This interactive application allows users to explore data, perform statistical analyses, and multicriteria rankings (TOPSIS, DEA/BoD).
+
 ---
 
 ## Table of Contents
