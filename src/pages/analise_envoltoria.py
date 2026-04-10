@@ -7,32 +7,32 @@ from src.models import dea
 from src.plots import viz
 
 def render():
-    st.title("📈 Eficiência Logística - Modelo BoD")
+    st.title("📈 Logistics Efficiency - BoD Model")
 
     st.markdown(
         """
-        Esta análise utiliza o modelo BoD (Benefit of the Doubt) com restrições para avaliar a eficiência logística dos países da União Europeia,
-        com base nos subindicadores do LPI. O modelo permite que cada país escolha os pesos mais favoráveis, dentro de limites estabelecidos,
-        refletindo sua especialização logística.
+        This analysis uses the BoD (Benefit of the Doubt) model with constraints to assess the logistics efficiency 
+        of European Union countries, based on LPI sub-indicators. The model allows each country to choose the 
+        most favorable weights within established limits, reflecting its specific logistics specialization.
         """
     )
 
-    # Carregamento dos dados
+    # Data loading
     df = world_bank.load_lpi_data()
     anos_disponiveis = sorted(df["Year"].unique(), reverse=True)
 
     col1, col2 = st.columns([2, 1])
     with col1:
         ano_selecionado = st.selectbox(
-            "Selecione um ano para análise BoD",
+            "Select a year for BoD analysis",
             anos_disponiveis,
             index=0
         )
     with col2:
-        mostrar_grafico = st.checkbox("Mostrar gráfico", value=True)
+        mostrar_grafico = st.checkbox("Show chart", value=True)
 
     if ano_selecionado is None:
-        st.warning("Selecione um ano para prosseguir.")
+        st.warning("Please select a year to proceed.")
         return
 
     outputs = [
@@ -44,18 +44,18 @@ def render():
         "Timeliness"
     ]
 
-    with st.spinner("Calculando eficiência BoD para o ano selecionado..."):
+    with st.spinner("Calculating BoD efficiency for the selected year..."):
         df_ano = df[df["Year"] == ano_selecionado].copy()
         df_ano = df_ano.dropna(subset=outputs)
 
         if df_ano.empty:
-            st.warning("Não há dados suficientes para o ano selecionado após filtragem.")
+            st.warning("Insufficient data for the selected year after filtering.")
             return
 
         dados = df_ano[outputs]
         dados.index = df_ano["Country"]
 
-        # Aplicar o modelo BoD
+        # Apply the BoD model
         scores = dea.bod_model(dados)
 
         results_df = pd.DataFrame({
@@ -64,11 +64,11 @@ def render():
             "Year": ano_selecionado
         })
 
-    st.markdown(f"### Resultados do Modelo BoD para o ano: {ano_selecionado}")
+    st.markdown(f"### BoD Model Results for the year: {ano_selecionado}")
     st.dataframe(results_df.style.format({"BoD Score": "{:.4f}"}), use_container_width=True)
 
     if mostrar_grafico:
-        # Preparar dados para plotagem
+        # Prepare data for plotting
         plot_df = results_df.rename(columns={"BoD Score": "DEA Efficiency"})
         fig = viz.plot_dea_efficiency(plot_df)
         st.plotly_chart(fig, use_container_width=True)
