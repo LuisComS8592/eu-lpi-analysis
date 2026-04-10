@@ -8,29 +8,31 @@ from scipy.stats import pearsonr
 import plotly.graph_objects as go
 import plotly.colors
 
+# Set global style for Seaborn
 sns.set(style="whitegrid")
 
 
 def plot_comparative_indicator(df: pd.DataFrame, countries: list[str], indicator: str) -> plt.Figure:
     """
-    Plota a evolução temporal de um indicador LPI para múltiplos países.
+    Plots the time evolution of an LPI indicator for multiple countries.
 
     Parameters:
-        df (pd.DataFrame): DataFrame contendo os dados do LPI.
-        countries (list[str]): Lista de países para comparação.
-        indicator (str): Nome do indicador LPI a ser plotado.
+        df (pd.DataFrame): DataFrame containing LPI data.
+        countries (list[str]): List of countries for comparison.
+        indicator (str): Name of the LPI indicator to be plotted.
 
     Returns:
-        matplotlib.figure.Figure: Objeto figura do gráfico gerado.
+        matplotlib.figure.Figure: Generated plot figure object.
     """
     plt.figure(figsize=(12, 6))
     for country in countries:
         country_data = df[df["Country"] == country]
         plt.plot(country_data["Year"], country_data[indicator], marker='o', label=country)
-    plt.title(f'Evolução do Indicador {indicator}')
-    plt.xlabel('Ano')
+    
+    plt.title(f'Evolution of Indicator: {indicator}')
+    plt.xlabel('Year')
     plt.ylabel(indicator)
-    plt.legend(title='País')
+    plt.legend(title='Country')
     plt.grid(True)
     fig = plt.gcf()
     plt.close()
@@ -39,22 +41,22 @@ def plot_comparative_indicator(df: pd.DataFrame, countries: list[str], indicator
 
 def plot_europe_map(df: pd.DataFrame, year: int, indicator: str = "LPI Aggregate") -> go.Figure:
     """
-    Gera um mapa interativo da Europa mostrando os valores de um indicador LPI em um dado ano.
+    Generates an interactive map of Europe showing the values of an LPI indicator in a given year.
 
     Parameters:
-        df (pd.DataFrame): DataFrame com dados do LPI.
-        year (int): Ano a ser exibido no mapa.
-        indicator (str, optional): Indicador a ser exibido. Padrão é "LPI Aggregate".
+        df (pd.DataFrame): DataFrame with LPI data.
+        year (int): Year to be displayed on the map.
+        indicator (str, optional): Indicator to be displayed. Default is "LPI Aggregate".
 
     Returns:
-        plotly.graph_objects.Figure: Figura do mapa interativo.
+        plotly.graph_objects.Figure: Interactive map figure.
     """
     df_year = df[df["Year"] == year].copy()
 
     if indicator not in df_year.columns:
-        raise ValueError(f"Indicador '{indicator}' não encontrado nos dados.")
+        raise ValueError(f"Indicator '{indicator}' not found in data.")
 
-    # Tooltip customizado
+    # Customized Tooltip
     def format_tooltip(row):
         return (
             f"<b>{row['Country']}</b><br>"
@@ -76,10 +78,10 @@ def plot_europe_map(df: pd.DataFrame, year: int, indicator: str = "LPI Aggregate
         color=indicator,
         hover_name="Country",
         color_continuous_scale="RdYlGn",
-        title=f"{indicator} na Europa - {year}"
+        title=f"{indicator} in Europe - {year}"
     )
 
-    # Usar hovertemplate para customizar tooltip, sem incluir dados padrão do hover_data
+    # Use hovertemplate for custom tooltip
     fig.update_traces(
         hovertemplate=df_year["tooltip"],
         marker_line_width=0.5
@@ -100,7 +102,8 @@ def plot_europe_map(df: pd.DataFrame, year: int, indicator: str = "LPI Aggregate
         margin={"r": 0, "t": 50, "l": 0, "b": 0},
         height=650,
         width=950,
-        coloraxis_colorbar=dict(title=indicator)
+        coloraxis_colorbar=dict(title=indicator),
+        template='plotly_white'
     )
 
     return fig
@@ -108,20 +111,20 @@ def plot_europe_map(df: pd.DataFrame, year: int, indicator: str = "LPI Aggregate
 
 def plot_histogram(df: pd.DataFrame, indicator: str) -> plt.Figure:
     """
-    Cria um histograma com curva KDE para um indicador do LPI.
+    Creates a histogram with a KDE curve for an LPI indicator.
 
     Parameters:
-        df (pd.DataFrame): DataFrame com dados do LPI.
-        indicator (str): Indicador para o histograma.
+        df (pd.DataFrame): DataFrame with LPI data.
+        indicator (str): Indicator for the histogram.
 
     Returns:
-        matplotlib.figure.Figure: Figura com o histograma.
+        matplotlib.figure.Figure: Figure containing the histogram.
     """
     plt.figure(figsize=(10, 6))
     sns.histplot(df[indicator], kde=True, color='skyblue')
-    plt.title(f'Histograma do Indicador {indicator}')
+    plt.title(f'Histogram of Indicator: {indicator}')
     plt.xlabel(indicator)
-    plt.ylabel('Frequência')
+    plt.ylabel('Frequency')
     fig = plt.gcf()
     plt.close()
     return fig
@@ -129,19 +132,19 @@ def plot_histogram(df: pd.DataFrame, indicator: str) -> plt.Figure:
 
 def plot_boxplot_by_year(df: pd.DataFrame, indicator: str) -> plt.Figure:
     """
-    Gera boxplots do indicador por ano para visualizar distribuição e outliers.
+    Generates boxplots of the indicator by year to visualize distribution and outliers.
 
     Parameters:
-        df (pd.DataFrame): DataFrame com dados do LPI.
-        indicator (str): Indicador para o boxplot.
+        df (pd.DataFrame): DataFrame with LPI data.
+        indicator (str): Indicator for the boxplot.
 
     Returns:
-        matplotlib.figure.Figure: Figura contendo o boxplot.
+        matplotlib.figure.Figure: Figure containing the boxplot.
     """
     plt.figure(figsize=(12, 6))
     sns.boxplot(x="Year", y=indicator, data=df)
-    plt.title(f'Boxplot do Indicador {indicator} por Ano')
-    plt.xlabel('Ano')
+    plt.title(f'Boxplot of {indicator} by Year')
+    plt.xlabel('Year')
     plt.ylabel(indicator)
     fig = plt.gcf()
     plt.close()
@@ -150,19 +153,19 @@ def plot_boxplot_by_year(df: pd.DataFrame, indicator: str) -> plt.Figure:
 
 def plot_correlation_heatmap_seaborn(df: pd.DataFrame, indicators: list[str]) -> plt.Figure:
     """
-    Plota heatmap da matriz de correlação entre indicadores do LPI.
+    Plots a heatmap of the correlation matrix between LPI indicators.
 
     Parameters:
-        df (pd.DataFrame): DataFrame com dados do LPI.
-        indicators (list[str]): Lista de indicadores para correlação.
+        df (pd.DataFrame): DataFrame with LPI data.
+        indicators (list[str]): List of indicators for correlation.
 
     Returns:
-        matplotlib.figure.Figure: Figura do heatmap da correlação.
+        matplotlib.figure.Figure: Correlation heatmap figure.
     """
     corr = df[indicators].corr()
     plt.figure(figsize=(10, 8))
     sns.heatmap(corr, annot=True, cmap='coolwarm', fmt=".2f", square=True, linewidths=.5)
-    plt.title('Mapa de Correlação entre Indicadores')
+    plt.title('Correlation Heatmap between Indicators')
     fig = plt.gcf()
     plt.close()
     return fig
@@ -170,19 +173,19 @@ def plot_correlation_heatmap_seaborn(df: pd.DataFrame, indicators: list[str]) ->
 
 def plot_scatter_regression(df: pd.DataFrame, x_indicator: str, y_indicator: str) -> plt.Figure:
     """
-    Cria um scatterplot com linha de regressão entre dois indicadores.
+    Creates a scatterplot with a regression line between two indicators.
 
     Parameters:
-        df (pd.DataFrame): DataFrame com dados do LPI.
-        x_indicator (str): Indicador para eixo X.
-        y_indicator (str): Indicador para eixo Y.
+        df (pd.DataFrame): DataFrame with LPI data.
+        x_indicator (str): Indicator for X-axis.
+        y_indicator (str): Indicator for Y-axis.
 
     Returns:
-        matplotlib.figure.Figure: Figura do gráfico scatter com regressão.
+        matplotlib.figure.Figure: Scatterplot figure with regression.
     """
     plt.figure(figsize=(10, 6))
     sns.regplot(x=x_indicator, y=y_indicator, data=df, scatter_kws={"alpha":0.6})
-    plt.title(f'Regressão entre {x_indicator} e {y_indicator}')
+    plt.title(f'Regression between {x_indicator} and {y_indicator}')
     plt.xlabel(x_indicator)
     plt.ylabel(y_indicator)
     fig = plt.gcf()
@@ -192,15 +195,10 @@ def plot_scatter_regression(df: pd.DataFrame, x_indicator: str, y_indicator: str
 
 def pearson_correlation_test(df: pd.DataFrame, x_indicator: str, y_indicator: str) -> dict[str, float]:
     """
-    Calcula a correlação de Pearson entre dois indicadores.
-
-    Parameters:
-        df (pd.DataFrame): DataFrame com dados do LPI.
-        x_indicator (str): Indicador X para correlação.
-        y_indicator (str): Indicador Y para correlação.
+    Calculates the Pearson correlation between two indicators.
 
     Returns:
-        dict[str, float]: Dicionário contendo 'correlation' (coeficiente de Pearson) e 'p_value' (significância).
+        dict[str, float]: Dictionary containing 'correlation' and 'p_value'.
     """
     corr, p_value = pearsonr(df[x_indicator], df[y_indicator])
     return {"correlation": corr, "p_value": p_value}
@@ -213,25 +211,13 @@ def plot_radar_subindicators(
     subindicators: list[str]
 ) -> tuple[go.Figure, pd.DataFrame]:
     """
-    Gera gráfico radar para evolução dos subindicadores LPI de um país em anos selecionados.
-
-    Parameters:
-        df (pd.DataFrame): DataFrame com dados do LPI.
-        country (str): País a ser analisado.
-        years (list[int]): Lista de anos para comparação.
-        subindicators (list[str]): Lista de subindicadores para o radar.
-
-    Returns:
-        tuple: Figura plotly do radar e DataFrame pivotado dos valores.
+    Generates a radar chart for the evolution of LPI sub-indicators of a country.
     """
     df_country = df[(df["Country"] == country) & (df["Year"].isin(years))]
-
-    # Seleciona somente as colunas dos subindicadores e o ano como índice
     df_selected = df_country.set_index("Year")[subindicators]
 
     fig = go.Figure()
     categories = subindicators
-
     colors = plotly.colors.qualitative.Plotly
     n_colors = len(colors)
 
@@ -251,7 +237,7 @@ def plot_radar_subindicators(
 
     fig.update_layout(
         polar=dict(radialaxis=dict(visible=True, range=[0, 5], tickvals=[0,1,2,3,4,5])),
-        title=f'Evolução dos Subindicadores LPI - {country}',
+        title=f'Evolution of LPI Sub-indicators - {country}',
         showlegend=True,
         template='plotly_white'
     )
@@ -260,13 +246,7 @@ def plot_radar_subindicators(
 
 def plot_dea_efficiency(results_df: pd.DataFrame) -> go.Figure:
     """
-    Cria gráfico de barras facetado mostrando a eficiência DEA por país e ano.
-
-    Parameters:
-        results_df (pd.DataFrame): DataFrame com colunas 'Country', 'DEA Efficiency' e 'Year'.
-
-    Returns:
-        plotly.graph_objects.Figure: Gráfico interativo da eficiência DEA.
+    Creates a faceted bar chart showing DEA efficiency by country and year.
     """
     fig = px.bar(
         results_df.sort_values("DEA Efficiency", ascending=False),
@@ -276,24 +256,16 @@ def plot_dea_efficiency(results_df: pd.DataFrame) -> go.Figure:
         color_continuous_scale="RdYlGn",
         facet_col='Year',
         facet_col_wrap=2,
-        title='Eficiência DEA por País e Ano',
-        labels={'DEA Efficiency': 'Eficiência DEA'}
+        title='DEA Efficiency by Country and Year',
+        labels={'DEA Efficiency': 'DEA Efficiency', 'Country': 'Country'}
     )
-    fig.update_layout(showlegend=False)
-    fig.update_layout(template='plotly_white')
+    fig.update_layout(showlegend=False, template='plotly_white')
     return fig
 
 
 def plot_topsis_ranking(df: pd.DataFrame, ano: int) -> go.Figure:
     """
-    Cria gráfico de barras ordenado com scores TOPSIS dos países.
-
-    Parameters:
-        df (pd.DataFrame): DataFrame com colunas 'Country' e 'TOPSIS Score'.
-        ano (int): Ano da análise para título.
-
-    Returns:
-        plotly.graph_objects.Figure: Gráfico de barras interativo.
+    Creates an ordered bar chart with TOPSIS scores of countries.
     """
     df_sorted = df.sort_values('TOPSIS Score', ascending=False)
     fig = px.bar(
@@ -301,8 +273,8 @@ def plot_topsis_ranking(df: pd.DataFrame, ano: int) -> go.Figure:
         x='Country',
         y='TOPSIS Score',
         color='TOPSIS Score',
-        title=f'Ranking TOPSIS - {ano}',
-        labels={'TOPSIS Score': 'Score TOPSIS'},
+        title=f'TOPSIS Ranking - {ano}',
+        labels={'TOPSIS Score': 'TOPSIS Score', 'Country': 'Country'},
         color_continuous_scale='RdYlGn'
     )
     fig.update_layout(template='plotly_white')
@@ -311,13 +283,7 @@ def plot_topsis_ranking(df: pd.DataFrame, ano: int) -> go.Figure:
 
 def plot_correlation_heatmap_plotly(corr_matrix: pd.DataFrame) -> go.Figure:
     """
-    Gera heatmap interativo da matriz de correlação usando Plotly.
-
-    Parameters:
-        corr_matrix (pd.DataFrame): Matriz de correlação.
-
-    Returns:
-        plotly.graph_objects.Figure: Figura do heatmap interativo.
+    Generates an interactive heatmap of the correlation matrix using Plotly.
     """
     fig = px.imshow(
         corr_matrix,
@@ -325,7 +291,7 @@ def plot_correlation_heatmap_plotly(corr_matrix: pd.DataFrame) -> go.Figure:
         color_continuous_scale='RdBu_r',
         origin='lower',
         aspect='auto',
-        title='Matriz de Correlação Interativa'
+        title='Interactive Correlation Matrix'
     )
     fig.update_layout(template='plotly_white')
     return fig
@@ -339,17 +305,7 @@ def plot_scatter_ranking(
     label_y: str
 ) -> go.Figure:
     """
-    Gera gráfico de dispersão interativo entre dois rankings.
-
-    Parameters:
-        comparativo (pd.DataFrame): DataFrame com colunas x, y e 'Country'.
-        x (str): Coluna para eixo X.
-        y (str): Coluna para eixo Y.
-        label_x (str): Rótulo eixo X.
-        label_y (str): Rótulo eixo Y.
-
-    Returns:
-        plotly.graph_objects.Figure: Gráfico de dispersão interativo.
+    Generates an interactive scatter plot between two rankings.
     """
     fig = px.scatter(
         comparativo,
@@ -358,7 +314,7 @@ def plot_scatter_ranking(
         color='Country',
         hover_name='Country',
         labels={x: label_x, y: label_y},
-        title=f'Relação entre {label_x} e {label_y}'
+        title=f'Relationship between {label_x} and {label_y}'
     )
     fig.update_layout(template='plotly_white')
     return fig
