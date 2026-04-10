@@ -5,17 +5,17 @@ from src.data import world_bank
 from src.plots import viz
 
 def render():
-    st.title("📊 Análise Comparativa entre Países da União Europeia")
+    st.title("📊 Comparative Analysis between EU Countries")
 
-    # Carregar dados
+    # Load data
     df = world_bank.load_lpi_data()
 
-    # Filtros laterais
-    st.sidebar.header("🎛️ Filtros de Análise")
+    # Sidebar filters
+    st.sidebar.header("🎛️ Analysis Filters")
 
     countries = sorted(df['Country'].unique())
     selected_countries = st.sidebar.multiselect(
-        "Selecione um ou mais países",
+        "Select one or more countries",
         countries,
         default=countries[:3]
     )
@@ -25,31 +25,31 @@ def render():
         'International Shipments', 'Logistics Quality and Competence',
         'Tracking and Tracing', 'Timeliness'
     ]
-    selected_indicator = st.sidebar.selectbox("Selecione um indicador", indicators)
+    selected_indicator = st.sidebar.selectbox("Select an indicator", indicators)
 
-    # Validação da seleção de países
+    # Validation for country selection
     if not selected_countries:
-        st.warning("🔔 Selecione pelo menos um país para continuar a análise.")
+        st.warning("🔔 Please select at least one country to continue the analysis.")
         return
 
-    # Filtrar dados
+    # Filter data
     df_filtered = df[df['Country'].isin(selected_countries)]
 
     if df_filtered.empty:
-        st.error("❌ Nenhum dado disponível para os países selecionados.")
+        st.error("❌ No data available for the selected countries.")
         return
 
-    # Gráfico de evolução temporal
-    st.subheader(f"📈 Evolução do Indicador **{selected_indicator}** ao Longo dos Anos")
+    # Time evolution chart
+    st.subheader(f"📈 Evolution of the **{selected_indicator}** Indicator Over the Years")
     try:
         fig = viz.plot_comparative_indicator(df_filtered, selected_countries, selected_indicator)
         st.pyplot(fig)
     except ValueError as e:
-        st.error(f"Erro ao gerar gráfico: {e}")
+        st.error(f"Error generating chart: {e}")
 
-    # Tabela de dados
+    # Data table
     st.markdown("---")
-    st.subheader("📄 Tabela de Dados Resumidos")
+    st.subheader("📄 Summary Data Table")
     display_cols = ['Country', 'Year', selected_indicator]
     st.dataframe(
         df_filtered[display_cols].sort_values(by=[selected_indicator, 'Year'], ascending=[False, False]),
