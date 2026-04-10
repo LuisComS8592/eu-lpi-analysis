@@ -1,74 +1,72 @@
-# EU Logistic Performance Index Analysis
+# EU Logistics Performance Index Analysis
 
-[🚀 Acesse a aplicação online](https://eu-lpi-analysis.streamlit.app)
+[🚀 Access the web application](https://eu-lpi-analysis.streamlit.app)
 
-Análise detalhada do desempenho logístico dos países da União Europeia, com base no Índice de Desempenho Logístico (LPI). Aplicação interativa para explorar dados, realizar análises estatísticas e ranqueamentos multicritério (TOPSIS, DEA).
+Detailed analysis of the logistics performance of European Union countries based on the Logistics Performance Index (LPI). This interactive application allows users to explore data, perform statistical analyses, and multicriteria rankings (TOPSIS, DEA/BoD).
+---
+
+## Table of Contents
+
+- [About](#about)
+- [App Acess](#app-acess)
+- [Features](#features)
+- [Technologies](#technologies)
+- [Installation and Local Usage](#installation-and-local-usage)
+- [Project Structure](#project-structure)
+- [License](#license)
+- [Contact](#contact)
 
 ---
 
-## Índice
+## About
 
-- [Sobre](#sobre)
-- [Acesso à Aplicação](#acesso-à-aplicação)
-- [Funcionalidades](#funcionalidades)
-- [Tecnologias](#tecnologias)
-- [Instalação e Uso Local](#instalação-e-uso-local)
-- [Estrutura do Projeto](#estrutura-do-projeto)
-- [Licença](#licença)
-- [Contato](#contato)
+This project is the result of a Research Project titled "Assessment of Logistics Performance in European Union Countries based on the Logistics Performance Index". The main objective is to provide a tool for analyzing and ranking EU countries according to logistics indicators using World Bank data.
 
+The application, developed in Python with Streamlit, integrates statistical and multicriteria methods to facilitate data-driven understanding and decision-making.
 ---
 
-## Sobre
+## App Access
 
-Este projeto é fruto da Iniciação Científica intitulada **"Avaliação do Desempenho Logístico dos Países da União Europeia com Base no Índice de Desempenho Logístico"**. O objetivo principal é fornecer uma ferramenta que permita a análise e o ranqueamento dos países da UE conforme indicadores logísticos, utilizando dados do World Bank.
-
-A aplicação, desenvolvida em Python com Streamlit, integra métodos estatísticos e multicritério para facilitar a compreensão e a tomada de decisões baseada em dados.
-
----
-
-## Acesso à Aplicação
-
-Acesse a aplicação online sem necessidade de instalação:
+Access the application online with no installation required:
 
 👉 [https://eu-lpi-analysis.streamlit.app](https://eu-lpi-analysis.streamlit.app)
 
 ---
 
-## Funcionalidades
+## Features
 
-- Exploração interativa dos dados do Índice de Desempenho Logístico (LPI)
-- Análises estatísticas descritivas detalhadas
-- Ranqueamento com o método TOPSIS configurável por critérios e pesos
-- Avaliação de eficiência via Análise Envoltória de Dados (DEA)
-- Visualizações gráficas dinâmicas e exportação dos resultados
-- Interface web intuitiva e responsiva via Streamlit
+- Interactive exploration of Logistics Performance Index (LPI) data.
+- Detailed descriptive statistical analysis.
+- Ranking using the TOPSIS method, configurable by criteria and weights.
+- Efficiency assessment via Data Envelopment Analysis (DEA) / Benefit of the Doubt (BoD) model.
+- Dynamic graphical visualizations and results export.
+- Intuitive and responsive web interface via Streamlit.
 
 ---
 
-## Tecnologias
+## Technologies
 
 - Python 3.10+
 - Pandas, NumPy, SciPy, scikit-learn
-- Streamlit para interface interativa
-- Matplotlib, Seaborn e Plotly para visualizações
-- cvxpy para modelo DEA
-- Outras dependências detalhadas em `requirements.txt`
+- Streamlit for the interactive interface
+- Matplotlib, Seaborn, and Plotly for visualizations
+- cvxpy for the DEA model
+- Other dependencies detailed in `requirements.txt`
 
 ---
 
-## Instalação e Uso Local
+## Installation and Local Usage
 
-Para rodar a aplicação localmente:
+To run the application locally:
 
-1. Clone o repositório
+1. Clone the repository:o
 
 ```
-git clone https://github.com/seu-usuario/eu-lpi-analysis.git
+git clone https://github.com/your-username/eu-lpi-analysis.git
 cd eu-lpi-analysis
 ```
 
-2. Crie e ative um ambiente virtual
+2. Create and activate a virtual environment:
 
 ```
 python -m venv venv
@@ -76,44 +74,43 @@ source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate     # Windows
 ```
 
-3. Instale as dependências
+3. Install the dependencies:
 
 ```
 pip install -r requirements.txt
 ```
 
-4. Execute a aplicação
+4. Run the application:
 
 ```
 streamlit run app.py
 ```
 
-5. Abra no navegador
+5. Open in your browser:
 
 ```
 http://localhost:8501
 ```
 
-## Estrutura do Projeto
+## Project Structure
 
 ```
 eu-lpi-analysis/
 │
-├── data/                  # Dados brutos e processados
-├── src/                   # Código-fonte
-│   ├── models/            # Implementação de TOPSIS, DEA, etc.
-│   ├── plots/             # Funções para visualizações
-│   └── utils/             # Utilitários auxiliares
-├── app.py                 # Aplicação principal Streamlit
-├── requirements.txt       # Dependências
-└── README.md              # Documentação do projeto
-└── LICENSE                # Licença
+├── data/                  # Raw and processed data
+├── src/                   # Source code
+│   ├── models/            # TOPSIS, DEA, etc. implementation
+│   ├── plots/             # Visualization functions
+│   └── utils/             # Helper utilities
+├── app.py                 # Main Streamlit application
+├── requirements.txt       # Project dependencies
+└── README.md              # Project documentation
+└── LICENSE                # License file
 ```
 
-## Licença
-Distribuído sob a licença MIT. Veja o arquivo LICENSE para detalhes.
+## License
+Distributed under the MIT License. See the `LICENSE` file for details.
 
-## Contato
+## Contact
 Luis Enrique Krulikowski
-
-LinkedIn: linkedin.com/in/luis-krulikowski
+[LinkedIn](linkedin.com/in/luis-krulikowski)
