@@ -23,6 +23,7 @@ Detailed analysis of the logistics performance of European Union countries based
 This project is the result of a Research Project titled "Assessment of Logistics Performance in European Union Countries based on the Logistics Performance Index". The main objective is to provide a tool for analyzing and ranking EU countries according to logistics indicators using World Bank data.
 
 The application, developed in Python with Streamlit, integrates statistical and multicriteria methods to facilitate data-driven understanding and decision-making.
+
 ---
 
 ## App Access
