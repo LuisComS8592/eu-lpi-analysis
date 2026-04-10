@@ -8,36 +8,38 @@ import plotly.express as px
 from src.utils.helpers import SUBINDICATORS
 
 def render():
-    st.title("📌 Análise Multicritério - Método TOPSIS")
+    st.title("📌 Multicriteria Analysis - TOPSIS Method")
 
     st.markdown(
         """
-        Esta análise utiliza o método TOPSIS (Technique for Order of Preference by Similarity to Ideal Solution)
-        para ranquear os países da União Europeia com base nos subindicadores do LPI.
+        This analysis utilizes the TOPSIS (Technique for Order of Preference by Similarity to Ideal Solution) 
+        method to rank European Union countries based on LPI sub-indicators. 
+        It evaluates performance by measuring the distance of each country to the 
+        theoretical ideal (best observed values) and the negative-ideal solutions.
         """
     )
 
     df = world_bank.load_lpi_data()
     anos_disponiveis = sorted(df["Year"].unique(), reverse=True)
 
-    ano = st.selectbox("Selecione o ano para análise TOPSIS", anos_disponiveis)
+    ano = st.selectbox("Select the year for TOPSIS analysis", anos_disponiveis)
 
     df_ano = df[df["Year"] == ano].copy()
 
     criterios = SUBINDICATORS
 
-    # Validar dados ausentes
+    # Validate missing data
     df_ano = df_ano.dropna(subset=criterios)
     if df_ano.empty:
-        st.warning(f"Não há dados suficientes para análise TOPSIS no ano {ano}.")
+        st.warning(f"Insufficient data for TOPSIS analysis in the year {ano}.")
         return
 
-    pesos = [1 / len(criterios)] * len(criterios)  # pesos iguais
+    pesos = [1 / len(criterios)] * len(criterios)  # equal weights
 
-    with st.spinner("Calculando ranking TOPSIS..."):
+    with st.spinner("Calculating TOPSIS ranking..."):
         ranking = topsis.topsis(df_ano, criterios, pesos)
 
-    st.subheader(f"Ranking TOPSIS ({ano})")
+    st.subheader(f"TOPSIS Ranking ({ano})")
     st.dataframe(ranking.style.format({"TOPSIS Score": "{:.4f}"}), use_container_width=True)
 
     fig = px.bar(
@@ -46,7 +48,8 @@ def render():
         y="TOPSIS Score",
         color="TOPSIS Score",
         color_continuous_scale="RdYlGn",
-        title=f"Ranking dos Países (TOPSIS) - {ano}"
+        title=f"Country Ranking (TOPSIS) - {ano}",
+        labels={"TOPSIS Score": "Performance Score", "Country": "Country"}
     )
-    fig.update_layout(xaxis_tickangle=-45)
+    fig.update_layout(xaxis_tickangle=-45, template='plotly_white')
     st.plotly_chart(fig, use_container_width=True)
