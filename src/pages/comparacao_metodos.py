@@ -8,92 +8,92 @@ from src.utils.helpers import SUBINDICATORS
 from src.plots import viz
 
 def render():
-    st.title("📊 Comparação dos Rankings dos Países")
+    st.title("📊 Country Ranking Comparison")
 
     st.markdown(
         """
-        Esta página apresenta uma análise comparativa dos rankings do LPI original (World Bank)
-        com os rankings derivados por DEA e TOPSIS.
+        This page presents a comparative analysis of the original LPI rankings (World Bank)
+        with the rankings derived via DEA (BoD) and TOPSIS.
         
-        Além de tabelas e gráficos, calculamos correlações entre rankings e destacamos
-        convergências e divergências entre os métodos.
+        In addition to tables and charts, we calculate correlations between rankings and highlight
+        convergences and divergences between the methodologies.
         """
     )
 
     df = world_bank.load_lpi_data()
     anos_disponiveis = sorted(df["Year"].unique(), reverse=True)
-    ano = st.selectbox("Selecione o ano para análise", anos_disponiveis)
+    ano = st.selectbox("Select year for analysis", anos_disponiveis)
     df_ano = df[df["Year"] == ano].copy()
 
     subindicadores = SUBINDICATORS
     df_ano = df_ano.dropna(subset=subindicadores + ["LPI Aggregate"])
     if df_ano.empty:
-        st.warning(f"Não há dados suficientes para o ano {ano} após filtragem.")
+        st.warning(f"Insufficient data for the year {ano} after filtering.")
         return
 
-    # Garantir que os subindicadores são numéricos
+    # Ensure sub-indicators are numeric
     for col in subindicadores:
         df_ano[col] = pd.to_numeric(df_ano[col], errors="coerce")
     df_ano = df_ano.dropna(subset=subindicadores + ["Country"])
     if df_ano.empty:
-        st.warning("Dados insuficientes após a conversão dos subindicadores para valores numéricos.")
+        st.warning("Insufficient data after converting sub-indicators to numeric values.")
         return
 
-    # DEA
+    # DEA (Benefit of the Doubt)
     inputs = df_ano[subindicadores]
     dea_result = dea.bod_model(inputs)
     dea_ranking = pd.DataFrame({
         "Country": df_ano["Country"].values,
         "Efficiency Score": dea_result.values
     })
-    dea_ranking["Ranking DEA"] = dea_ranking["Efficiency Score"].rank(ascending=False, method="min").astype(int)
+    dea_ranking["DEA Rank"] = dea_ranking["Efficiency Score"].rank(ascending=False, method="min").astype(int)
 
     # TOPSIS
     n_criterios = int(len(subindicadores))
     pesos = [1.0 / n_criterios] * n_criterios
     topsis_result = topsis.topsis(df_ano[["Country"] + subindicadores], subindicadores, pesos)
-    topsis_result = topsis_result.rename(columns={"Ranking": "Ranking TOPSIS"})
+    topsis_result = topsis_result.rename(columns={"Ranking": "TOPSIS Rank"})
 
-    # Ranking World Bank
-    df_ano["Ranking WB"] = df_ano["LPI Aggregate"].rank(ascending=False, method="min").astype(int)
+    # World Bank Ranking
+    df_ano["WB Rank"] = df_ano["LPI Aggregate"].rank(ascending=False, method="min").astype(int)
 
-    # Combinar rankings
-    comparativo = df_ano[["Country", "Ranking WB"]].merge(
-        dea_ranking[["Country", "Ranking DEA"]], on="Country", how="inner"
+    # Combine rankings
+    comparativo = df_ano[["Country", "WB Rank"]].merge(
+        dea_ranking[["Country", "DEA Rank"]], on="Country", how="inner"
     ).merge(
-        topsis_result[["Country", "Ranking TOPSIS"]], on="Country", how="inner"
+        topsis_result[["Country", "TOPSIS Rank"]], on="Country", how="inner"
     )
 
-    st.subheader(f"Tabela Comparativa dos Rankings - Ano {ano}")
+    st.subheader(f"Ranking Comparison Table - Year {ano}")
     st.dataframe(comparativo.set_index("Country"), use_container_width=True)
 
-    # Correlações de Spearman
-    st.subheader("Correlação de Spearman entre Rankings")
-    corr_matrix = comparativo[["Ranking WB", "Ranking DEA", "Ranking TOPSIS"]].corr(method='spearman')
+    # Spearman Correlations
+    st.subheader("Spearman Rank Correlation")
+    corr_matrix = comparativo[["WB Rank", "DEA Rank", "TOPSIS Rank"]].corr(method='spearman')
     st.dataframe(corr_matrix.style.format("{:.2f}"), use_container_width=True)
 
     fig_corr = viz.plot_correlation_heatmap_plotly(corr_matrix)
     st.plotly_chart(fig_corr, use_container_width=True)
 
-    # Gráficos de dispersão
-    st.subheader("Dispersão entre Rankings")
-    comparativo_clean = comparativo.dropna(subset=["Ranking WB", "Ranking DEA", "Ranking TOPSIS"])
+    # Scatter Plots
+    st.subheader("Ranking Scatter Analysis")
+    comparativo_clean = comparativo.dropna(subset=["WB Rank", "DEA Rank", "TOPSIS Rank"])
 
-    fig = viz.plot_scatter_ranking(comparativo_clean, "Ranking WB", "Ranking DEA", "Ranking World Bank", "Ranking DEA")
+    fig = viz.plot_scatter_ranking(comparativo_clean, "WB Rank", "DEA Rank", "World Bank Rank", "DEA Rank")
     st.plotly_chart(fig, use_container_width=True)
 
-    fig = viz.plot_scatter_ranking(comparativo_clean, "Ranking WB", "Ranking TOPSIS", "Ranking World Bank", "Ranking TOPSIS")
+    fig = viz.plot_scatter_ranking(comparativo_clean, "WB Rank", "TOPSIS Rank", "World Bank Rank", "TOPSIS Rank")
     st.plotly_chart(fig, use_container_width=True)
 
-    fig = viz.plot_scatter_ranking(comparativo_clean, "Ranking DEA", "Ranking TOPSIS", "Ranking DEA", "Ranking TOPSIS")
+    fig = viz.plot_scatter_ranking(comparativo_clean, "DEA Rank", "TOPSIS Rank", "DEA Rank", "TOPSIS Rank")
     st.plotly_chart(fig, use_container_width=True)
 
-    # Destaques de convergências/divergências
-    st.subheader("Destaques - Convergências e Divergências")
+    # Highlights: Convergences and Divergences
+    st.subheader("Highlights - Convergence and Divergence")
     threshold = 3
 
-    comparativo["DEA vs WB"] = (comparativo["Ranking DEA"] - comparativo["Ranking WB"]).abs()
-    comparativo["TOPSIS vs WB"] = (comparativo["Ranking TOPSIS"] - comparativo["Ranking WB"]).abs()
+    comparativo["DEA vs WB"] = (comparativo["DEA Rank"] - comparativo["WB Rank"]).abs()
+    comparativo["TOPSIS vs WB"] = (comparativo["TOPSIS Rank"] - comparativo["WB Rank"]).abs()
 
     convergentes = comparativo[
         (comparativo["DEA vs WB"] <= threshold) & 
@@ -105,8 +105,8 @@ def render():
         (comparativo["TOPSIS vs WB"] > threshold)
     ]
 
-    st.markdown(f"**Países com ranking convergente (diferença ≤ {threshold} posições em todos os métodos):** {len(convergentes)}")
-    st.dataframe(convergentes.set_index("Country")[["Ranking WB", "Ranking DEA", "Ranking TOPSIS"]], use_container_width=True)
+    st.markdown(f"**Countries with convergent rankings (difference ≤ {threshold} positions across all methods):** {len(convergentes)}")
+    st.dataframe(convergentes.set_index("Country")[["WB Rank", "DEA Rank", "TOPSIS Rank"]], use_container_width=True)
 
-    st.markdown(f"**Países com divergências significativas (diferença > {threshold} posições em ao menos um método):** {len(divergentes)}")
-    st.dataframe(divergentes.set_index("Country")[["Ranking WB", "Ranking DEA", "Ranking TOPSIS"]], use_container_width=True)
+    st.markdown(f"**Countries with significant divergences (difference > {threshold} positions in at least one method):** {len(divergentes)}")
+    st.dataframe(divergentes.set_index("Country")[["WB Rank", "DEA Rank", "TOPSIS Rank"]], use_container_width=True)
